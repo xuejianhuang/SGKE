@@ -1,7 +1,7 @@
 # The framework of the proposed model:
 
 <div align="center">
-<img src='./fig/model.png' width='90%'>
+<img src='./fig/model.png' width='60%'>
 </div>
 
 ## Datasets
