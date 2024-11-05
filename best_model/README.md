@@ -1,1 +1,1 @@
-This directory is used to store the trained model.
+This directory is used to store the trained model. We have uploaded the pretrained SGKE model on the Weibo and Twitter datasets. The download link is: https://pan.baidu.com/s/1I3WCdVh67Ci1D-OIMjx0tA?pwd=s9fn
