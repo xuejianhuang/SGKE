@@ -49,7 +49,7 @@ f_dropout = 0  # Dropout rate for fully connected layers
 
 
 # Training parameters
-batch_size = 2  # Batch size for training
+batch_size = 32  # Batch size for training
 epoch = 10  # Number of training epochs
 patience = 3  # Patience for early stopping
 lr = 5e-5  # Learning rate
