@@ -392,8 +392,13 @@ def getModelAndData(model_name='SGKE', dataset='weibo',batch=config.batch_size):
 
     if dataset =='weibo':
         data_root_dir = config.weibo_dataset_dir
-    else:
+    elif dataset=='twitter':
         data_root_dir=config.twitter_dataset_dir
+
+    elif dataset=='pheme':
+        data_root_dir=config.pheme_dataset_dir
+    elif dataset=='weibo2':
+        data_root_dir=config.weibo2_dataset_dir
 
     dataset_path=os.path.join(data_root_dir, 'dataset_items_merged.json')
 
