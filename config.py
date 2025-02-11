@@ -4,6 +4,10 @@ from transformers import BertTokenizer, BertModel
 # Directories for datasets and model saving
 weibo_dataset_dir='./data/Weibo/'
 twitter_dataset_dir='./data/Twitter/'
+
+pheme_dataset_dir='../data/PHEME/'
+weibo2_dataset_dir='../data/Weibo+/'
+
 model_saved_path='./best_model/'
 
 # BERT model and tokenizer directories
@@ -30,7 +34,9 @@ swin_transformer='./swin-transformer'
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Number of output classes for the classifier
-num_classes=3
+#num_classes=2  #for PHEME and Weibo2 datasets
+num_classes=3  #for Weibo and Twitter datasets
+
 
 # Text and image processing parameters
 text_max_length = 40  # Maximum length of text sequences
