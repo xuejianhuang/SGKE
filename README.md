@@ -6,7 +6,7 @@
 
 ## Datasets
 * For the original MR2 data, please download it from Google Drive  <a href="https://drive.google.com/file/d/14NNqLKSW1FzLGuGkqwlzyIPXnKDzEFX4/view?usp=sharing" target='_blank'>link</a>  or Baidu Cloud  <a href="https://pan.baidu.com/s/1OV_Oab0zQgI8P2Wo1qwBuw?pwd=1odv" target='_blank'>link</a>.
-* For the Pheme and weibo-2 datasets, please download it from Baidu Cloud  <a href="https://pan.baidu.com/s/1G6GXIvPZctHQctrBt4ibfg?pwd=tbet" target='_blank'>link</a>.
+* For the Pheme and Weibo-2 datasets, please download it from Baidu Cloud  <a href="https://pan.baidu.com/s/1G6GXIvPZctHQctrBt4ibfg?pwd=tbet" target='_blank'>link</a>.
 * We have also uploaded the preprocessed ELA images and scene graphs to Baidu Cloud. The download link is: https://pan.baidu.com/s/1I3WCdVh67Ci1D-OIMjx0tA?pwd=s9fn
 * please refer to [this repo](https://github.com/S-Abdelnabi/OoC-multi-modal-fc) for the evidence collection process. 
   
