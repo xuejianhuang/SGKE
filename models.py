@@ -5,7 +5,7 @@ import torch.nn.functional as F
 import config
 from dgl.nn import GATConv
 
-from layers import SwinTransformer,SGATConv
+from layers import SwinTransformer,SGATConv,SGATConv,CrossAttention,CoAttention
 
 class SGKE(nn.Module):
     def __init__(self,in_feats,edge_feats,out_feats,num_heads=2,n_layers=2,residual=False):
@@ -36,10 +36,23 @@ class SGKE(nn.Module):
                                                           config.att_num_heads,
                                                           batch_first=True,
                                                           dropout=config.att_dropout)
+        # self.cross_attention_text=CrossAttention(config.text_dim,config.text_dim,config.text_dim,
+        #                                          num_heads=config.att_num_heads,dropout=config.att_dropout)
         self.cross_attention_image = nn.MultiheadAttention(config.img_dim,
                                                            config.att_num_heads,
                                                            batch_first=True,
                                                            dropout=config.att_dropout)
+        # self.cross_attention_image = CrossAttention(config.img_dim, config.img_dim, config.img_dim,
+        #                                            num_heads=config.att_num_heads, dropout=config.att_dropout)
+
+        # self.co_attention= CoAttention(
+        #     input_dim1=config.out_feats,
+        #     input_dim2=config.out_feats,
+        #     hidden_dim=config.hidden_dim,
+        #     num_heads=config.att_num_heads,
+        #     dropout=config.att_dropout
+        # )
+        
         # Classifier layers
         self.classifier = nn.Sequential(
             nn.Linear(config.hidden_dim * 6, config.classifier_hidden_dim),
@@ -92,6 +105,11 @@ class SGKE(nn.Module):
         # Read out node features
         img_dgl_feature = dgl.readout_nodes(img_dgl, 'h', op='mean')
         text_dgl_feature = dgl.readout_nodes(text_dgl, 'h', op='mean')
+
+        # co_it, co_ti = self.co_attention(img_dgl_feature, text_dgl_feature)
+        # co_it = co_it.mean(dim=1)
+        # co_ti = co_ti.mean(dim=1)
+        # co_fea = torch.stack([co_it, co_ti], dim=1).mean(dim=1)
 
         # Semantic similarity features
         SG_features = F.leaky_relu(self.dgl_linear(torch.cat((img_dgl_feature, text_dgl_feature), dim=-1)))
