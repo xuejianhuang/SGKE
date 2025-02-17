@@ -162,3 +162,193 @@ class SwinTransformer(nn.Module):
         # Extract image features using Swin Transformer
         features = self.swin(pixel_values=x).last_hidden_state
         return features  # The output feature dimension of Swin Transformer is (49,768)
+        
+class SelfAttention(nn.Module):
+    """
+    Self-Attention mechanism using nn.MultiheadAttention.
+    This computes self-attention on a single input sequence.
+    """
+
+    def __init__(self, input_dim, hidden_dim, num_heads=8, dropout=0.1):
+        """
+        Initialize the Self-Attention layer.
+
+        Args:
+            input_dim (int): The dimension of the input sequence (e.g., text features).
+            hidden_dim (int): The hidden dimension for attention computation.
+            num_heads (int): The number of attention heads.
+            dropout (float): Dropout probability for regularization.
+        """
+        super(SelfAttention, self).__init__()
+
+        self.hidden_dim = hidden_dim
+
+        # Linear projection layer for the input sequence
+        self.fc = nn.Linear(input_dim, hidden_dim)
+
+        # MultiheadAttention layer
+        self.attn = nn.MultiheadAttention(hidden_dim, num_heads, dropout=dropout)
+
+        # Dropout for regularization
+        self.dropout = nn.Dropout(dropout)
+
+        # Final output layer to combine attended features
+        self.fc_out = nn.Linear(hidden_dim, hidden_dim)
+
+    def forward(self, x):
+        """
+        Forward pass through the self-attention layer.
+
+        Args:
+            x (torch.Tensor): The input sequence of shape (batch_size, seq_len, input_dim).
+
+        Returns:
+            torch.Tensor: The attended feature representation.
+        """
+
+        # Apply linear projection to input to match the attention dimension
+        q = self.fc(x)  # (batch_size, seq_len, hidden_dim)
+
+        # Prepare input for MultiheadAttention: (seq_len, batch_size, hidden_dim)
+        q = q.permute(1, 0, 2)  # (seq_len, batch_size, hidden_dim)
+
+        # Self-attention: Attention over the same sequence
+        attn_output, _ = self.attn(q, q, q)  # Self-attention on the input
+
+        # Apply the final output layer
+        output = self.fc_out(attn_output.permute(1, 0, 2))  # Back to (batch_size, seq_len, hidden_dim)
+
+        # Apply dropout for regularization
+        output = self.dropout(output)
+
+        return output
+
+class CrossAttention(nn.Module):
+    """
+    Cross-Attention mechanism using nn.MultiheadAttention.
+    This computes cross-attention between two sequences.
+    """
+
+    def __init__(self, input_dim1, input_dim2, hidden_dim, num_heads=8, dropout=0.1):
+        """
+        Initialize the Cross-Attention layer.
+
+        Args:
+            input_dim1 (int): The dimension of the first input sequence (e.g., text features).
+            input_dim2 (int): The dimension of the second input sequence (e.g., image features).
+            hidden_dim (int): The hidden dimension for attention computation.
+            num_heads (int): The number of attention heads.
+            dropout (float): Dropout probability for regularization.
+        """
+        super(CrossAttention, self).__init__()
+
+        self.hidden_dim = hidden_dim
+
+        # Linear projection layers for both input sequences
+        self.fc1 = nn.Linear(input_dim1, hidden_dim)
+        self.fc2 = nn.Linear(input_dim2, hidden_dim)
+
+        # MultiheadAttention layer
+        self.attn = nn.MultiheadAttention(hidden_dim, num_heads, dropout=dropout)
+
+        # Dropout for regularization
+        self.dropout = nn.Dropout(dropout)
+
+        # Final output layer to combine attended features
+        self.fc_out = nn.Linear(hidden_dim, hidden_dim)
+
+    def forward(self, x1, x2):
+        """
+        Forward pass through the cross-attention layer.
+
+        Args:
+            x1 (torch.Tensor): The first input sequence of shape (batch_size, seq_len1, input_dim1).
+            x2 (torch.Tensor): The second input sequence of shape (batch_size, seq_len2, input_dim2).
+
+        Returns:
+            torch.Tensor: The attended feature representation.
+        """
+
+        # Apply linear projections to both inputs to match the attention dimension
+        q1 = self.fc1(x1)  # (batch_size, seq_len1, hidden_dim)
+        q2 = self.fc2(x2)  # (batch_size, seq_len2, hidden_dim)
+
+        # Prepare input for MultiheadAttention: (seq_len, batch_size, hidden_dim)
+        q1 = q1.permute(1, 0, 2)  # (seq_len1, batch_size, hidden_dim)
+        q2 = q2.permute(1, 0, 2)  # (seq_len2, batch_size, hidden_dim)
+
+        # Cross-attention between x1 and x2 (attention from x1 to x2)
+        attn_output, _ = self.attn(q1, q2, q2)  # Attention from x1 to x2
+
+        # Apply the final output layer
+        output = self.fc_out(attn_output.permute(1, 0, 2))  # Back to (batch_size, seq_len1, hidden_dim)
+
+        # Apply dropout for regularization
+        output = self.dropout(output)
+
+        return output
+
+class CoAttention(nn.Module):
+    """
+    Co-attention mechanism using MultiheadAttention to model interactions between two sequences.
+    """
+
+    def __init__(self, input_dim1, input_dim2, hidden_dim, num_heads=8, dropout=0.1):
+        """
+        Initialize the Co-Attention layer using MultiheadAttention.
+
+        Args:
+            input_dim1 (int): The dimension of the first input sequence (e.g., text features).
+            input_dim2 (int): The dimension of the second input sequence (e.g., image features).
+            hidden_dim (int): The hidden dimension for attention computation.
+            num_heads (int): The number of attention heads.
+            dropout (float): Dropout probability for regularization.
+        """
+        super(CoAttention, self).__init__()
+
+        self.hidden_dim = hidden_dim
+
+        # Linear projection layers for both inputs
+        self.fc1 = nn.Linear(input_dim1, hidden_dim)
+        self.fc2 = nn.Linear(input_dim2, hidden_dim)
+
+        # MultiheadAttention layers
+        self.attn1 = nn.MultiheadAttention(hidden_dim, num_heads, dropout=dropout)
+        self.attn2 = nn.MultiheadAttention(hidden_dim, num_heads, dropout=dropout)
+
+        # Dropout for regularization
+        self.dropout = nn.Dropout(dropout)
+
+    def forward(self, x1, x2):
+        """
+        Forward pass through the co-attention layer.
+
+        Args:
+            x1 (torch.Tensor): The first input sequence of shape (batch_size, seq_len1, input_dim1).
+            x2 (torch.Tensor): The second input sequence of shape (batch_size, seq_len2, input_dim2).
+
+        Returns:
+            torch.Tensor: The attended feature representation for both sequences.
+        """
+
+        # Apply linear projections to both inputs to match the attention dimension
+        q1 = self.fc1(x1)  # (batch_size, seq_len1, hidden_dim)
+        q2 = self.fc2(x2)  # (batch_size, seq_len2, hidden_dim)
+
+        # Prepare input for MultiheadAttention: (seq_len, batch_size, hidden_dim)
+        q1 = q1.permute(1, 0, 2)  # (seq_len1, batch_size, hidden_dim)
+        q2 = q2.permute(1, 0, 2)  # (seq_len2, batch_size, hidden_dim)
+
+        # Cross-attention between x1 and x2 (attention from x1 to x2 and vice versa)
+        cross_attn1, _ = self.attn1(q1, q2, q2)  # Attention from x1 to x2
+        cross_attn2, _ = self.attn2(q2, q1, q1)  # Attention from x2 to x1
+
+        # Permute back to (batch_size, seq_len, hidden_dim) for both attentions
+        cross_attn1 = cross_attn1.permute(1, 0, 2)  # (batch_size, seq_len1, hidden_dim)
+        cross_attn2 = cross_attn2.permute(1, 0, 2)  # (batch_size, seq_len2, hidden_dim)
+
+        # Apply dropout for regularization on both attention results
+        cross_attn1 = self.dropout(cross_attn1)
+        cross_attn2 = self.dropout(cross_attn2)
+
+        return cross_attn1, cross_attn2
