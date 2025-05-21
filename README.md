@@ -48,6 +48,8 @@ If you find this project helps your research, please kindly consider citing our 
 author = { 黄学坚 and  马廷淮 and  荣欢 and  王根生 and  廖国琼 and  刘德喜 },
 title = {融合外部知识与证据的场景图注意力网络多模态谣言检测},
 journal = {计算机学报},
+year = {2025},
+url={http://kns.cnki.net/kcms/detail/11.1826.tp.20250520.1501.002.html},
 pages = {1-23},
 issn = {0254-4164},
 }
