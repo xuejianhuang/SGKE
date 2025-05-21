@@ -1,3 +1,4 @@
+## Code for the paper “Multi-Modal Rumor Detection with Scene Graph Attention Networks Integrating External Knowledge and Evidence”.
 ## The framework of the proposed model:
 
 <div align="center">
@@ -40,6 +41,17 @@
 ## Run
 python main.py --dataset twitter --model SGKE --batch 32
 
+##
+If you find this project helps your research, please kindly consider citing our paper in your publications.
+```
+@article{ JSJX20250520001,
+author = { 黄学坚 and  马廷淮 and  荣欢 and  王根生 and  廖国琼 and  刘德喜 },
+title = {融合外部知识与证据的场景图注意力网络多模态谣言检测},
+journal = {计算机学报},
+pages = {1-23},
+issn = {0254-4164},
+}
+```
 ## Acknowledgements
 Thank you to **Xuming Hu** (Tsinghua University, Beijing, China), **Zhijiang Guo** (University of Cambridge, Cambridge, United Kingdom), **Junzhe Chen** (Tsinghua University, Beijing, China), **Lijie Wen** (Tsinghua University, Beijing, China), and **Philip S Yu** (University of Illinois at Chicago, Chicago, IL, USA) for providing the dataset.
 
